@@ -38,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void minusButton_onClick(View v) {
+        if (jumbCounter <= 0) {
+            jumbCounter = 0;
+            return;
+        }
+
         long oldPressTime = lastPressTime;
         lastPressTime = System.currentTimeMillis();
         if (lastPressTime - oldPressTime > DOUBLE_PRESS_INTERVAL) {
@@ -46,12 +51,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         lastPressTime = 0; // Reset
+        jumbCounter--;
 
-        if (jumbCounter <= 0) {
-            jumbCounter = 0;
-        } else {
-            jumbCounter--;
-        }
         updateCounterTV();
     }
 
