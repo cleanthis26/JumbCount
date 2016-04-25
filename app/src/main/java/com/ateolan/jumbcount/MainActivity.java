@@ -3,11 +3,16 @@ package com.ateolan.jumbcount;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,10 +22,32 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+    private class MenuDrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+            selectItem(position);
+        }
+
+        /**
+         * Swaps fragments in the main content view
+         */
+        private void selectItem(int position) {
+            // Highlight the selected item, update the title, and close the drawer
+            mainDrawerList.setItemChecked(position, true);
+            setTitle(menuTitles[position]);
+            mainDrawerLayout.closeDrawer(mainDrawerList);
+        }
+
+        public void setTitle(CharSequence title) {
+            getSupportActionBar().setTitle(title);
+        }
+    }
+
     private static final int DOUBLE_PRESS_INTERVAL = 1000;
     private static final String TAG = MainActivity.class.getName();
 
     // Variables
+    String[] menuTitles;
     int jumbCounter;
     long lastPressTime;
     Date today;
@@ -33,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
     TextView counterTV;
     Button plusButton;
 
+
+    DrawerLayout mainDrawerLayout;
+    ListView mainDrawerList;
+    ActionBarDrawerToggle mainDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +83,46 @@ public class MainActivity extends AppCompatActivity {
         retrieveTodaysCounter();
 
         updateCounterTV();
+
+        // Set up drawer
+        menuTitles =  getResources().getStringArray(R.array.menu_titles_array);
+        mainDrawerLayout = (DrawerLayout) findViewById(R.id.main_drawer_layout);
+        mainDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        mainDrawerList.setAdapter(new ArrayAdapter<>(this,
+                R.layout.drawer_list_item, menuTitles));
+        // Set the list's click listener
+        mainDrawerList.setOnItemClickListener(new MenuDrawerItemClickListener());
+
+        mainDrawerToggle = new ActionBarDrawerToggle(this, mainDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle(getString(R.string.drawer_close));
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle(getString(R.string.drawer_open));
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mainDrawerLayout.addDrawerListener(mainDrawerToggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mainDrawerToggle.syncState();
     }
 
     private void retrieveTodaysCounter() {
@@ -197,5 +268,4 @@ public class MainActivity extends AppCompatActivity {
         updateCounterTV();
         incrementCounterDB();
     }
-
 }

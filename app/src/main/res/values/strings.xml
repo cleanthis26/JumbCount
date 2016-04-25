@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">JumbCount</string>
     <string name="jumbcounter_val">%1$d</string>
+    <string-array name="menu_titles_array">
+        <item>Counter</item>
+        <item>History Stats</item>
+    </string-array>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 </resources>
