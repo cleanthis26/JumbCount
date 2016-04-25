@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         mainDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
-        mainDrawerList.setAdapter(new ArrayAdapter<>(this,
+        mainDrawerList.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.drawer_list_item, menuTitles));
         // Set the list's click listener
         mainDrawerList.setOnItemClickListener(new MenuDrawerItemClickListener());
